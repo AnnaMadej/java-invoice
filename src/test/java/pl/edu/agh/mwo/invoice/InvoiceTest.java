@@ -1,17 +1,19 @@
 package pl.edu.agh.mwo.invoice;
 
-import java.math.BigDecimal;
-
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 import pl.edu.agh.mwo.invoice.Invoice;
 import pl.edu.agh.mwo.invoice.product.DairyProduct;
 import pl.edu.agh.mwo.invoice.product.OtherProduct;
 import pl.edu.agh.mwo.invoice.product.Product;
 import pl.edu.agh.mwo.invoice.product.TaxFreeProduct;
+
+import java.math.BigDecimal;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Scanner;
 
 public class InvoiceTest {
     private Invoice invoice;
@@ -137,4 +139,71 @@ public class InvoiceTest {
         int number2 = new Invoice().getNumber();
         Assert.assertEquals(number1, number2-1);
     }
+    
+    @Test
+    public void invoiceCanBeConvertedToString() {
+    	String invoiceString = invoice.toString();
+    	Assert.assertTrue(invoiceString instanceof String);
+    	Assert.assertTrue(invoiceString != null);
+    }
+    
+    @Test
+    public void invoiceStringStartsWithInvoiceNumber() {
+    	String invoiceString = invoice.toString();
+    	Assert.assertTrue(invoiceString.startsWith(Integer.toString(invoice.getNumber())));
+    }
+    
+    @Test
+    public void invoiceStringEndsWithNumberOfAllProducts() {
+    	invoice.addProduct(new TaxFreeProduct("Owoce", new BigDecimal("200")));
+        invoice.addProduct(new DairyProduct("Maslanka", new BigDecimal("100")));
+        invoice.addProduct(new OtherProduct("Wino", new BigDecimal("10")));
+        
+    	String invoiceString = invoice.toString();
+    	String lastLine = invoiceString.substring(invoiceString.lastIndexOf("\n")+1);
+    	String expectedLine = "Liczba pozycji: " + invoice.getProducts().size();
+    	
+    	Assert.assertEquals(expectedLine, lastLine);
+    }
+    
+    @Test
+    public void invoiceStringHasProperAmountOfLines() {
+    	invoice.addProduct(new TaxFreeProduct("Owoce", new BigDecimal("200")));
+        invoice.addProduct(new DairyProduct("Maslanka", new BigDecimal("100")));
+        invoice.addProduct(new OtherProduct("Wino", new BigDecimal("10")));
+    	String invoiceString = invoice.toString();
+    	String onlyProductsString = invoiceString.substring(invoiceString.indexOf("\n")+1, invoiceString.lastIndexOf("\n")+1);
+    	int numberOfLines = onlyProductsString.split("\r\n|\r|\n").length;    	  	
+    	Assert.assertEquals(numberOfLines, invoice.getProducts().size());	
+    }
+    
+    @Test
+    public void invoiceStringHasProperContentOfLines() {
+    	invoice.addProduct(new TaxFreeProduct("Owoce", new BigDecimal("200")));
+        invoice.addProduct(new DairyProduct("Maslanka", new BigDecimal("100")));
+        invoice.addProduct(new OtherProduct("Wino", new BigDecimal("10")));
+        
+    	String invoiceString = invoice.toString();
+    	String onlyProductsString = invoiceString.substring(invoiceString.indexOf("\n")+1, invoiceString.lastIndexOf("\n")+1);
+    	
+    	Iterator<Map.Entry<Product, Integer>> productIterator  = invoice.getProducts().entrySet().iterator();
+    	
+    	Scanner sc = new Scanner(onlyProductsString);
+    	String productLine;
+    	String productLineFromString;
+    	int index = 0;
+    	
+    	while(sc.hasNextLine()) {
+            Map.Entry<Product, Integer> currentProduct = productIterator.next();
+            productLine = currentProduct.getKey() + ", " + currentProduct.getValue() + ", " + currentProduct.getKey().getPrice();
+    		productLineFromString = sc.nextLine();
+            Assert.assertEquals(productLine, productLineFromString);
+    	}
+    	
+    	Assert.assertTrue(!productIterator.hasNext());
+    }
+    
+    
+    
+ 
 }
