@@ -11,14 +11,20 @@ public class Invoice {
     private final int number = ++nextNumber;
 
     public void addProduct(Product product) {
-        addProduct(product, 1);
+        if (this.getProducts().containsKey(product)) {
+            products.put(product, this.getProducts().get(product) + 1);
+        } else {
+            products.put(product, 1);
+        }
     }
 
     public void addProduct(Product product, Integer quantity) {
         if (product == null || quantity <= 0) {
             throw new IllegalArgumentException();
         }
-        products.put(product, quantity);
+        for (int i = 0; i < quantity; i++) {
+            addProduct(product);
+        }
     }
 
     public BigDecimal getNetTotal() {
