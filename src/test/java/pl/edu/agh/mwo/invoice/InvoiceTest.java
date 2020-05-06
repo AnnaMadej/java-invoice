@@ -1,18 +1,18 @@
 package pl.edu.agh.mwo.invoice;
 
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import pl.edu.agh.mwo.invoice.product.DairyProduct;
-import pl.edu.agh.mwo.invoice.product.OtherProduct;
-import pl.edu.agh.mwo.invoice.product.Product;
-import pl.edu.agh.mwo.invoice.product.TaxFreeProduct;
-
 import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import pl.edu.agh.mwo.invoice.product.AlcoholProduct;
+import pl.edu.agh.mwo.invoice.product.DairyProduct;
+import pl.edu.agh.mwo.invoice.product.OtherProduct;
+import pl.edu.agh.mwo.invoice.product.Product;
+import pl.edu.agh.mwo.invoice.product.TaxFreeProduct;
 
 public class InvoiceTest {
     private Invoice invoice;
@@ -80,9 +80,13 @@ public class InvoiceTest {
         // 2x kubek - price: 10
         invoice.addProduct(new TaxFreeProduct("Kubek", new BigDecimal("5")), 2);
         // 3x kozi serek - price: 30
-        invoice.addProduct(new DairyProduct("Kozi Serek", new BigDecimal("10")), 3);
+        final int dairyProductQuantity = 3;
+        invoice.addProduct(new DairyProduct("Kozi Serek", new BigDecimal("10")), 
+                dairyProductQuantity);
         // 1000x pinezka - price: 10
-        invoice.addProduct(new OtherProduct("Pinezka", new BigDecimal("0.01")), 1000);
+        final int otherProductQuantity = 1000;
+        invoice.addProduct(new OtherProduct("Pinezka", new BigDecimal("0.01")), 
+                otherProductQuantity);
         Assert.assertThat(new BigDecimal("50"), Matchers.comparesEqualTo(invoice.getNetTotal()));
     }
 
@@ -91,9 +95,13 @@ public class InvoiceTest {
         // 2x kubek - price: 10
         invoice.addProduct(new TaxFreeProduct("Kubek", new BigDecimal("5")), 2);
         // 3x kozi serek - price: 30
-        invoice.addProduct(new DairyProduct("Kozi Serek", new BigDecimal("10")), 3);
+        final int dairyProductQuantity = 3;
+        invoice.addProduct(new DairyProduct("Kozi Serek", new BigDecimal("10")), 
+                dairyProductQuantity);
         // 1000x pinezka - price: 10
-        invoice.addProduct(new OtherProduct("Pinezka", new BigDecimal("0.01")), 1000);
+        final int otherProductQuantity = 1000;
+        invoice.addProduct(new OtherProduct("Pinezka", new BigDecimal("0.01")), 
+                otherProductQuantity);
         Assert.assertThat(new BigDecimal("54.70"),
                 Matchers.comparesEqualTo(invoice.getGrossTotal()));
     }
@@ -141,19 +149,19 @@ public class InvoiceTest {
     }
 
     @Test
-    public void invoiceCanBeConvertedToString() {
+    public void testinvoiceCanBeConvertedToString() {
         String invoiceString = invoice.toString();
         Assert.assertTrue(invoiceString != null);
     }
 
     @Test
-    public void invoiceStringStartsWithInvoiceNumber() {
+    public void testinvoiceStringStartsWithInvoiceNumber() {
         String invoiceString = invoice.toString();
         Assert.assertTrue(invoiceString.startsWith(Integer.toString(invoice.getNumber())));
     }
 
     @Test
-    public void invoiceStringEndsWithNumberOfAllProducts() {
+    public void testinvoiceStringEndsWithNumberOfAllProducts() {
         invoice.addProduct(new TaxFreeProduct("Owoce", new BigDecimal("200")));
         invoice.addProduct(new DairyProduct("Maslanka", new BigDecimal("100")));
         invoice.addProduct(new OtherProduct("Wino", new BigDecimal("10")));
@@ -166,7 +174,7 @@ public class InvoiceTest {
     }
 
     @Test
-    public void invoiceStringHasProperAmountOfLines() {
+    public void testinvoiceStringHasProperAmountOfLines() {
         invoice.addProduct(new TaxFreeProduct("Owoce", new BigDecimal("200")));
         invoice.addProduct(new DairyProduct("Maslanka", new BigDecimal("100")));
         invoice.addProduct(new OtherProduct("Wino", new BigDecimal("10")));
@@ -178,7 +186,7 @@ public class InvoiceTest {
     }
 
     @Test
-    public void invoiceStringHasProperContentOfLines() {
+    public void testinvoiceStringHasProperContentOfLines() {
         invoice.addProduct(new TaxFreeProduct("Owoce", new BigDecimal("200")));
         invoice.addProduct(new DairyProduct("Maslanka", new BigDecimal("100")));
         invoice.addProduct(new OtherProduct("Wino", new BigDecimal("10")));
@@ -208,10 +216,10 @@ public class InvoiceTest {
     
 
     @Test
-    public void productQuantityChangesWhenAddedMultipleTimesOneAtTime() {
+    public void testproductQuantityChangesWhenAddedMultipleTimesOneAtTime() {
         Product product = new TaxFreeProduct("Owoce", new BigDecimal("100"));  
-        Integer times = 5;
-        for (int i = 0; i<times; i++) {
+        final Integer times = 5;
+        for (int i = 0; i < times; i++) {
             invoice.addProduct(product);
         }
         Assert.assertTrue(invoice.getProducts().containsKey(product));
@@ -219,33 +227,35 @@ public class InvoiceTest {
     }
     
     @Test
-    public void productQuantityChangesWhenAddedMultipleTimesMoreThanOneAtTime() {
+    public void testproductQuantityChangesWhenAddedMultipleTimesMoreThanOneAtTime() {
         Product product = new TaxFreeProduct("Owoce", new BigDecimal("100"));  
         
-        Integer firstTimeQuantity = 1;
-        Integer secondTimeQuantity = 2;
-        invoice.addProduct(product,firstTimeQuantity );
-        invoice.addProduct(product,secondTimeQuantity );
+        final Integer firstTimeQuantity = 1;
+        final Integer secondTimeQuantity = 2;
+        invoice.addProduct(product, firstTimeQuantity);
+        invoice.addProduct(product, secondTimeQuantity);
         
         Assert.assertTrue(invoice.getProducts().containsKey(product));
-        Assert.assertEquals(Integer.valueOf(firstTimeQuantity + secondTimeQuantity), invoice.getProducts().get(product));      
+        Assert.assertEquals(Integer.valueOf(firstTimeQuantity + secondTimeQuantity), 
+                invoice.getProducts().get(product));      
     }
     
     @Test
-    public void productQuantityChangesWhenAddedMultipleTimesAsNewObject() {
+    public void testproductQuantityChangesWhenAddedMultipleTimesAsNewObject() {
         Product product = null;
-        Integer times = 12;
-        for (int i = 0; i<times; i++) {
+        final Integer times = 12;
+        for (int i = 0; i < times; i++) {
             product = new TaxFreeProduct("Owoce", new BigDecimal("100"));  
             invoice.addProduct(product);
         }
-
+        
         Assert.assertTrue(invoice.getProducts().containsKey(product));
         Assert.assertEquals(times, invoice.getProducts().get(product));      
+    
     }
     
     @Test
-    public void productAppearsMoreThanOnceWhenAddedWithDifferentPriceOneAtTime() {
+    public void testproductAppearsMoreThanOnceWhenAddedWithDifferentPriceOneAtTime() {
         Product product1 =   new DairyProduct("Maslanka", new BigDecimal("100"));
         Product product2 =   new DairyProduct("Maslanka", new BigDecimal("200"));
         
@@ -261,12 +271,12 @@ public class InvoiceTest {
     }
     
     @Test
-    public void productAppearsMoreThanOnceWhenAddedWithDifferentPriceMoreThanOneAtTime() {
+    public void testproductAppearsMoreThanOnceWhenAddedWithDifferentPriceMoreThanOneAtTime() {
         Product product1 = new OtherProduct("Wino", new BigDecimal("10"));
         Product product2 = new OtherProduct("Wino", new BigDecimal("15"));
         
-        Integer product1Quantity = 3;
-        Integer product2Quantity = 4;
+        final Integer product1Quantity = 3;
+        final Integer product2Quantity = 4;
         
         invoice.addProduct(product1, product1Quantity);
         invoice.addProduct(product2, product2Quantity);
@@ -277,6 +287,74 @@ public class InvoiceTest {
         Assert.assertEquals(product1Quantity, invoice.getProducts().get(product1));    
         Assert.assertEquals(product2Quantity, invoice.getProducts().get(product2));   
         
+    }
+    
+    @Test
+    public void testproductAppearsMoreThanOnceWhenAddedWithDifferentTaxOneAtTime() {
+        Product product1 =   new DairyProduct("Maslanka", new BigDecimal("100"));
+        Product product2 =   new OtherProduct("Maslanka", new BigDecimal("100"));
+        
+        invoice.addProduct(product1);
+        invoice.addProduct(product2);
+     
+        Assert.assertTrue(invoice.getProducts().containsKey(product1));
+        Assert.assertTrue(invoice.getProducts().containsKey(product2));
+        Assert.assertEquals(2, invoice.getProducts().size());
+        Assert.assertEquals(Integer.valueOf(1), invoice.getProducts().get(product1));      
+        Assert.assertEquals(Integer.valueOf(1), invoice.getProducts().get(product2)); 
+        
+    }
+    
+    @Test
+    public void testproductAppearsMoreThanOnceWhenAddedWithDifferentTaxMoreThanOneAtTime() {
+        Product product1 =   new DairyProduct("Maslanka", new BigDecimal("100"));
+        Product product2 =   new OtherProduct("Maslanka", new BigDecimal("100"));
+        
+        final Integer product1Quantity = 3;
+        final Integer product2Quantity = 4;
+        
+        invoice.addProduct(product1, product1Quantity);
+        invoice.addProduct(product2, product2Quantity);
+     
+        Assert.assertTrue(invoice.getProducts().containsKey(product1));
+        Assert.assertTrue(invoice.getProducts().containsKey(product2));
+        Assert.assertEquals(2, invoice.getProducts().size());
+        Assert.assertEquals(product1Quantity, invoice.getProducts().get(product1));    
+        Assert.assertEquals(product2Quantity, invoice.getProducts().get(product2));  
+        
+    }
+    
+    @Test
+    public void testproductAppearsMoreThanOnceWhenAddedWithDifferentExciseOneAtTime() {
+        Product product1 =   new AlcoholProduct("Wino", new BigDecimal("100"));
+        Product product2 =   new OtherProduct("Wino", new BigDecimal("100"));
+        
+        invoice.addProduct(product1);
+        invoice.addProduct(product2);
+     
+        Assert.assertTrue(invoice.getProducts().containsKey(product1));
+        Assert.assertTrue(invoice.getProducts().containsKey(product2));
+        Assert.assertEquals(2, invoice.getProducts().size());
+        Assert.assertEquals(Integer.valueOf(1), invoice.getProducts().get(product1));      
+        Assert.assertEquals(Integer.valueOf(1), invoice.getProducts().get(product2));         
+    }
+    
+    @Test
+    public void testproductAppearsMoreThanOnceWhenAddedWithDifferentExciseMoreThanOneAtTime() {
+        Product product1 =   new AlcoholProduct("Wino", new BigDecimal("100"));
+        Product product2 =   new OtherProduct("Wino", new BigDecimal("100"));
+        
+        final Integer product1Quantity = 3;
+        final Integer product2Quantity = 4;
+        
+        invoice.addProduct(product1, product1Quantity);
+        invoice.addProduct(product2, product2Quantity);
+     
+        Assert.assertTrue(invoice.getProducts().containsKey(product1));
+        Assert.assertTrue(invoice.getProducts().containsKey(product2));
+        Assert.assertEquals(2, invoice.getProducts().size());
+        Assert.assertEquals(product1Quantity, invoice.getProducts().get(product1));    
+        Assert.assertEquals(product2Quantity, invoice.getProducts().get(product2));          
     }
     
   

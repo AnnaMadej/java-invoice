@@ -4,7 +4,7 @@
   <fileset name="all" enabled="false" check-config-name="Google Checks" local="false">
     <file-match-pattern match-pattern="." include-pattern="true"/>
   </fileset>
-  <fileset name="aad" enabled="true" check-config-name="aaa" local="false">
-    <file-match-pattern match-pattern="src/main/java" include-pattern="true"/>
+  <fileset name="all" enabled="true" check-config-name="aaa" local="false">
+    <file-match-pattern match-pattern="/" include-pattern="true"/>
   </fileset>
 </fileset-config>

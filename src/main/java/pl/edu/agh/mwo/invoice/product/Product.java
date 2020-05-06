@@ -1,6 +1,7 @@
 package pl.edu.agh.mwo.invoice.product;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public abstract class Product {
     private final String name;
@@ -9,18 +10,27 @@ public abstract class Product {
 
     private final BigDecimal taxPercent;
 
+    private final BigDecimal excise;
+
     protected Product(String name, BigDecimal price, BigDecimal tax) {
+        this(name, price, tax, BigDecimal.ZERO);
+    }
+
+    protected Product(String name, BigDecimal price, BigDecimal tax, BigDecimal excise) {
         if (name == null 
                 || name.equals("") 
                 || price == null 
-                || tax == null 
-                || tax.compareTo(new BigDecimal(0)) < 0
-                || price.compareTo(new BigDecimal(0)) < 0) {
+                || tax == null
+                || tax.compareTo(new BigDecimal(0)) < 0 
+                || price.compareTo(new BigDecimal(0)) < 0
+                || excise == null
+                || excise.compareTo(new BigDecimal(0)) < 0) {
             throw new IllegalArgumentException();
         }
         this.name = name;
         this.price = price;
         this.taxPercent = tax;
+        this.excise = excise;
     }
 
     public String getName() {
@@ -36,21 +46,23 @@ public abstract class Product {
     }
 
     public BigDecimal getPriceWithTax() {
-        return price.multiply(taxPercent).add(price);
+        return price.multiply(taxPercent).add(price).add(excise);
     }
 
+    @Override
     public String toString() {
         return this.name;
+    }
+    
+    
+    
+    public BigDecimal getExcise() {
+        return this.excise;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((price == null) ? 0 : price.hashCode());
-        result = prime * result + ((taxPercent == null) ? 0 : taxPercent.hashCode());
-        return result;
+        return Objects.hash(excise, name, price, taxPercent);
     }
 
     @Override
@@ -58,45 +70,18 @@ public abstract class Product {
         if (this == obj) {
             return true;
         }
-            
-        if (obj == null) {
+        if (!(obj instanceof Product)) {
             return false;
         }
-            
-        if (getClass() != obj.getClass()) {
-            return false; 
-        }
-            
         Product other = (Product) obj;
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-               
-        } else if (!name.equals(other.name)) {
-            return false;
-        }
-           
-        if (price == null) {
-            if (other.price != null) {
-                return false;
-            }
-               
-        } else if (!price.equals(other.price)) {
-            return false;
-        }
-            
-        if (taxPercent == null) {
-            if (other.taxPercent != null) {
-                return false;
-            }
+        return Objects.equals(name, other.name) 
+                && Objects.equals(price, other.price)
+                && Objects.equals(taxPercent, other.taxPercent)
+                && Objects.equals(excise, other.excise);
               
-        } else if (!taxPercent.equals(other.taxPercent)) {
-            return false;
-        }
-           
-        return true;
+    
+    
+    
+    
     }
-    
-    
 }
